@@ -142,7 +142,7 @@ func compareJSONObject(st state, a, b map[string]interface{}) (hunks []Hunk, err
 		hunks = append(hunks, h...)
 	}
 	for _, k := range bOnlyKeys {
-		h, err := compareAOnly(st.PushState("."+k), b[k])
+		h, err := compareBOnly(st.PushState("."+k), b[k])
 		if err != nil {
 			return nil, err
 		}

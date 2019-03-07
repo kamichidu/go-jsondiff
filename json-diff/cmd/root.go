@@ -11,6 +11,9 @@ import (
 	"strings"
 
 	"github.com/kamichidu/go-jsondiff"
+	"github.com/kamichidu/go-jsondiff/internal/cmdutil"
+	"github.com/logrusorgru/aurora"
+	"github.com/mattn/go-colorable"
 	_ "github.com/pmezard/go-difflib/difflib"
 	"github.com/spf13/cobra"
 )
@@ -34,6 +37,7 @@ to quickly create a Cobra application.`,
 		prettyPrint := mustGetBool(cmd.Flags().GetBool("pretty-print"))
 		outName := mustGetString(cmd.Flags().GetString("output"))
 		verbose := mustGetInt(cmd.Flags().GetCount("verbose"))
+		colorMode := cmd.Flag("color").Value.String()
 		aName := args[0]
 		bName := args[1]
 
@@ -59,6 +63,26 @@ to quickly create a Cobra application.`,
 			}
 		}
 
+		var stdout io.Writer
+		switch colorMode {
+		case "never":
+			stdout = colorable.NewNonColorable(os.Stdout)
+		case "auto":
+			// is pipe or not
+			if info, err := os.Stdout.Stat(); err != nil {
+				logger.Printf("unable to detect stdout is or is not a pipe: %v", err)
+				stdout = colorable.NewNonColorable(os.Stdout)
+			} else if (info.Mode() & os.ModeCharDevice) == 0 {
+				// is a pipe
+				stdout = colorable.NewNonColorable(os.Stdout)
+			} else {
+				// is not a pipe
+				stdout = colorable.NewColorable(os.Stdout)
+			}
+		default:
+			stdout = colorable.NewColorable(os.Stdout)
+		}
+
 		var opts []jsondiff.Option
 		for _, p := range setProperties {
 			logger.Printf("the path %q treat as a set", p)
@@ -72,7 +96,7 @@ to quickly create a Cobra application.`,
 
 		var w io.Writer
 		if outName == "-" {
-			w = os.Stdout
+			w = stdout
 		} else {
 			file, err := os.Create(outName)
 			if err != nil {
@@ -142,12 +166,12 @@ func writeHunk(w io.Writer, hunk jsondiff.Hunk, jsonFormatFn func(string, []byte
 	if hunk.New != nil {
 		newStr = jsonFormatFn("+", *hunk.New)
 	}
-	fmt.Fprintf(w, "@@ %s @@\n", hunk.Path)
+	fmt.Fprintln(w, aurora.Cyan(fmt.Sprintf("@@ %s @@", hunk.Path)))
 	if oldStr != "" {
-		fmt.Fprintln(w, oldStr)
+		fmt.Fprintln(w, aurora.Red(oldStr))
 	}
 	if newStr != "" {
-		fmt.Fprintln(w, newStr)
+		fmt.Fprintln(w, aurora.Green(newStr))
 	}
 }
 
@@ -238,4 +262,7 @@ func init() {
 	c.Flags().BoolP("pretty-print", "", false, "pretty print")
 	c.Flags().StringP("output", "o", "-", "output diffs")
 	c.Flags().CountP("verbose", "v", "verbose logging")
+	c.Flags().VarP(&cmdutil.StringEnumValue{
+		Choices: []string{"always", "auto", "never"},
+	}, "color", "", "colorize the output; `WHEN` can be 'always' (default if omitted), 'auto', or 'never'")
 }

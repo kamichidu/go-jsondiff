@@ -1,0 +1,12 @@
+{
+    "boolean": false,
+    "number1": 3.0,
+    "number2": 3,
+    "string": "TESTING",
+    "array": [
+        "a"
+    ],
+    "object": {
+        "a": "A"
+    }
+}

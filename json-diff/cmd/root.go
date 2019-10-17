@@ -261,7 +261,7 @@ func Execute(version VersionDescriptor) {
 	rootCmd.SetVersionTemplate(`{{ .Version }}`)
 	rootCmd.Version = version.String()
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Fprintln(os.Stderr, "Error:", err)
+		log.Print(err)
 		os.Exit(1)
 	}
 }

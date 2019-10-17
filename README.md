@@ -1,3 +1,9 @@
+[![Build Status](https://travis-ci.org/kamichidu/go-jsondiff.svg?branch=master)](https://travis-ci.org/kamichidu/go-jsondiff)
+[![Coverage Status](https://coveralls.io/repos/github/kamichidu/go-jsondiff/badge.svg)](https://coveralls.io/github/kamichidu/go-jsondiff)
+[![godoc](https://godoc.org/github.com/kamichidu/go-jsondiff?status.svg)](https://godoc.org/github.com/kamichidu/go-jsondiff)
+[![Go Report Card](https://goreportcard.com/badge/github.com/kamichidu/go-jsondiff)](https://goreportcard.com/report/github.com/kamichidu/go-jsondiff)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://raw.githubusercontent.com/kamichidu/go-jsondiff/master/LICENSE)
+
 # go-jsondiff
 yet another json diff tool for golang
 

@@ -1,0 +1,32 @@
+# See http://goreleaser.com
+before:
+  hooks:
+    # you may remove this if you don't use vgo
+    - go mod tidy
+builds:
+  - main: ./json-diff/
+    binary: json-diff
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - windows
+      - linux
+      - darwin
+    goarch:
+      - amd64
+archives:
+  - replacements:
+      amd64: x86_64
+    format_overrides:
+      - goos: windows
+        format: zip
+snapshot:
+  name_template: '{{ .Version }}-{{ .ShortCommit }}'
+checksum:
+  name_template: 'checksums.txt'
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'

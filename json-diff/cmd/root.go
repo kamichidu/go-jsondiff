@@ -18,6 +18,17 @@ import (
 	"github.com/spf13/cobra"
 )
 
+type VersionDescriptor struct {
+	Version, Commit, Date, BuiltBy string
+}
+
+func (v *VersionDescriptor) String() string {
+	return strings.Join([]string{
+		fmt.Sprintf("%s - %s", v.Version, v.Commit),
+		fmt.Sprintf("built by %s at %s", v.BuiltBy, v.Date),
+	}, "\n")
+}
+
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "json-diff [flags] {fileA} {fileB}",
@@ -242,11 +253,13 @@ func mustGetInt(v int, err error) int {
 
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
-func Execute() {
+func Execute(version VersionDescriptor) {
 	log.SetOutput(os.Stderr)
 	log.SetPrefix("> ")
 	log.SetFlags(0)
 
+	rootCmd.SetVersionTemplate(`{{ .Version }}`)
+	rootCmd.Version = version.String()
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, "Error:", err)
 		os.Exit(1)

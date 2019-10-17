@@ -1,4 +1,6 @@
 # See http://goreleaser.com
+env_files:
+  github_token: ~/.config/goreleaser/github_token
 before:
   hooks:
     # you may remove this if you don't use vgo
